@@ -102,8 +102,7 @@ def busca_categorias_despesas_geral_usuario(user_id):
     return jsonify(categorias)
 
 def cadastro_gastos_usuario(registros_gastos, usuario_id):
-    gastos = db.gastos
-    
+    gastos = db.gastos    
     data_hora_formatada = dataNow()
     
     for registro in registros_gastos:
@@ -118,7 +117,7 @@ def cadastro_gastos_usuario(registros_gastos, usuario_id):
     return {'message': 'Gastos inseridos com sucesso!'}
     
 def ultimas_despesas_usuario(dias, users_id):
-    gastos = db.gastos.find({'usuario_id': users_id})
+    gastos = db.gastos.find({'usuario_id': users_id})    
     resultado = []
     for gasto in gastos:
         categoria_id = gasto['categoria_despesa_id']
