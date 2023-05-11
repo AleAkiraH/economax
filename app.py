@@ -69,14 +69,33 @@ def ultimas_despesas_usuario():
 def ultimas_despesas_usuario_mes_atual_sintetico():
     usuario_id = request.json['id_usuario'].lower()
     return funcoes.ultimas_despesas_usuario_mes_atual_sintetico(usuario_id)
+
+@app.route('/gastos_categoria_usuario', methods=['POST'])
+def gastos_categoria_usuario():
+    usuario_id = request.json['id_usuario'].lower()
+    dias = request.json['dias'].lower()
+    return funcoes.gastos_categoria_usuario(usuario_id,dias)
+
+@app.route('/soma_total_gastos_por_usuario_por_dia', methods=['POST'])
+def soma_total_gastos_por_usuario_por_dia():
+    usuario_id = request.json['id_usuario'].lower()
+    dias = request.json['dias'].lower()
+    return funcoes.soma_total_gastos_por_usuario_por_dia(usuario_id,dias)
 #endregion
     
 #region Cadastro de valores
 @app.route('/cadastro_gastos_usuario', methods=['POST'])
 def cadastro_gastos_usuario():
     usuario_id = request.json['id_usuario'].lower()
-    registros_gastos = request.json['gastos']    
-    return funcoes.cadastro_gastos_usuario(registros_gastos,usuario_id)
+    registros_gastos = request.json['gastos']
+    
+    try:
+        descricao = request.json['descricao']
+    except:
+        descricao = ""
+    
+    return funcoes.cadastro_gastos_usuario(registros_gastos,usuario_id, descricao)
+
 #endregion
 
 if __name__ == '__main__':

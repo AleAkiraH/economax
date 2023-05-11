@@ -3,6 +3,7 @@ import pymongo
 from bson import ObjectId
 from datetime import datetime, timedelta
 import pytz
+import json
 
 client = pymongo.MongoClient("mongodb+srv://administrador:administrador@economax.wa1uot6.mongodb.net/test")    
 db = client['Economax']
@@ -101,7 +102,7 @@ def busca_categorias_despesas_geral_usuario(user_id):
 
     return jsonify(categorias)
 
-def cadastro_gastos_usuario(registros_gastos, usuario_id):
+def cadastro_gastos_usuario(registros_gastos, usuario_id, descricao):
     gastos = db.gastos    
     data_hora_formatada = dataNow()
     
@@ -110,7 +111,7 @@ def cadastro_gastos_usuario(registros_gastos, usuario_id):
         categoria_id = registro['id_categoria'].lower()
         valor = registro['valor']
         
-        novo_gasto = {'categoria_despesa_id': categoria_id, 'usuario_id': usuario_id, 'valor': valor, 'data': data_hora_formatada}
+        novo_gasto = {'categoria_despesa_id': categoria_id, 'usuario_id': usuario_id, 'valor': valor, 'descricao': descricao, 'data': data_hora_formatada}
 
         gasto_id = gastos.insert_one(novo_gasto)
         
@@ -152,6 +153,68 @@ def ultimas_despesas_usuario_mes_atual_sintetico(users_id):
 
     return jsonify(resultado)
 
+def gastos_categoria_usuario(usuario_id, dias):
+    collection_gastos = db['gastos']
+    collection_categorias = db['categorias_despesas_geral']
+
+    data_inicio = (datetime.now() - timedelta(days=int(dias))).replace(hour=0, minute=0, second=0)
+    data_inicio_formatada = data_inicio.strftime("%Y-%m-%d %H:%M:%S")
+
+    query = {
+        'usuario_id': usuario_id,
+        'data': {'$gte': data_inicio_formatada}
+    }
+
+    result = collection_gastos.aggregate([
+        {'$match': query},
+        {'$group': {'_id': '$categoria_despesa_id', 'total': {'$sum': {'$toInt': '$valor'}}}}
+    ])
+
+    soma_gastos_por_categoria = {}
+    for categoria in result:
+        categoria_id = categoria['_id']
+        total = categoria['total']
+        nome_categoria = collection_categorias.find_one({'_id': ObjectId(categoria_id)})['nome']
+        soma_gastos_por_categoria[nome_categoria] = total
+
+    # Construindo o dicionário de resultados
+    resultados = {}
+    for categoria, total in soma_gastos_por_categoria.items():
+        resultados[categoria] = total
+
+    # Convertendo para JSON
+    json_resultados = jsonify(resultados)
+
+    # Exibindo o resultado JSON
+    print(json_resultados)
+    return json_resultados
+
+def soma_total_gastos_por_usuario_por_dia(usuario_id, dias):
+    collection = db['gastos']
+
+    data_inicio = (datetime.now() - timedelta(days=int(dias))).replace(hour=0, minute=0, second=0)
+    data_inicio_formatada = data_inicio.strftime("%Y-%m-%d %H:%M:%S")
+
+    query = {
+        'usuario_id': usuario_id,
+        'data': {'$gte': data_inicio_formatada}
+    }
+    
+    # Executando a consulta e calculando a soma dos gastos
+    result = collection.aggregate([
+        {'$match': query},
+        {'$group': {'_id': None, 'total': {'$sum': {'$toInt': '$valor'}}}}
+    ])
+
+    # Obtendo o resultado da soma
+    soma_gastos = next(result, {'total': 0})['total']
+
+    data = {
+    "Total": soma_gastos
+    }
+    
+    json_data = jsonify(data)
+    return json_data
 
 # a = cadastro("Alexsander","1234")
 # print(a)
