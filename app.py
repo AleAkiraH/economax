@@ -73,13 +73,13 @@ def ultimas_despesas_usuario_mes_atual_sintetico():
 @app.route('/gastos_categoria_usuario', methods=['POST'])
 def gastos_categoria_usuario():
     usuario_id = request.json['id_usuario'].lower()
-    dias = request.json['dias'].lower()
+    dias = request.json['dias']
     return funcoes.gastos_categoria_usuario(usuario_id,dias)
 
 @app.route('/soma_total_gastos_por_usuario_por_dia', methods=['POST'])
 def soma_total_gastos_por_usuario_por_dia():
     usuario_id = request.json['id_usuario'].lower()
-    dias = request.json['dias'].lower()
+    dias = request.json['dias']
     return funcoes.soma_total_gastos_por_usuario_por_dia(usuario_id,dias)
 #endregion
     
