@@ -102,7 +102,7 @@ def busca_categorias_despesas_geral_usuario(user_id):
 
     return jsonify(categorias)
 
-def cadastro_gastos_usuario(registros_gastos, usuario_id, descricao):
+def cadastro_gastos_usuario(registros_gastos, usuario_id):
     gastos = db.gastos    
     data_hora_formatada = dataNow()
     
