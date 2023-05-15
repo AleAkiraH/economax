@@ -110,6 +110,7 @@ def cadastro_gastos_usuario(registros_gastos, usuario_id, descricao):
      
         categoria_id = registro['id_categoria'].lower()
         valor = registro['valor']
+        descricao = registro['descricao']
         
         novo_gasto = {'categoria_despesa_id': categoria_id, 'usuario_id': usuario_id, 'valor': valor, 'descricao': descricao, 'data': data_hora_formatada}
 

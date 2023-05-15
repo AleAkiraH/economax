@@ -88,13 +88,7 @@ def soma_total_gastos_por_usuario_por_dia():
 def cadastro_gastos_usuario():
     usuario_id = request.json['id_usuario'].lower()
     registros_gastos = request.json['gastos']
-    
-    try:
-        descricao = request.json['descricao']
-    except:
-        descricao = ""
-    
-    return funcoes.cadastro_gastos_usuario(registros_gastos,usuario_id, descricao)
+    return funcoes.cadastro_gastos_usuario(registros_gastos,usuario_id)
 
 #endregion
 
