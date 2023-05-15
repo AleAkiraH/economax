@@ -131,12 +131,14 @@ def ultimas_despesas_usuario(dias, users_id):
     
     if (dias==""):
         dias = 0
-        data_inicio = (datetime.now() - timedelta(days=int(dias))).replace(hour=0, minute=0, second=0)
-        data_limite = data_inicio.strftime("%Y-%m-01 00:00:00")
+        data_atual = (datetime.now() - timedelta(days=int(dias))).replace(hour=0, minute=0, second=0)
+        data_limite = data_atual.strftime("%Y-%m-01 00:00:00")
+        data_limite = datetime.strptime(data_limite, '%Y-%m-%d %H:%M:%S')
     else:
         data_atual = datetime.now()
         data_limite = datetime(data_atual.year, data_atual.month, data_atual.day, 0, 0, 0) - timedelta(days=int(dias))
-        lista_filtrada = []
+    
+    lista_filtrada = []
 
     for item in resultado:
         data_item = datetime.strptime(item['data'], '%Y-%m-%d %H:%M:%S')
