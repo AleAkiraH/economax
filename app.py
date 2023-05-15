@@ -62,7 +62,7 @@ def busca_categorias_despesas_geral_usuario():
 @app.route('/ultimas_despesas_usuario', methods=['POST'])
 def ultimas_despesas_usuario():
     usuario_id = request.json['id_usuario'].lower()
-    dias = request.json['dias'].lower()
+    dias = request.json['dias']
     return funcoes.ultimas_despesas_usuario(dias, usuario_id)
     
 @app.route('/ultimas_despesas_usuario_mes_atual_sintetico', methods=['POST'])
