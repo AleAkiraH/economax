@@ -125,9 +125,10 @@ def ultimas_despesas_usuario(dias, users_id):
         categoria_id = gasto['categoria_despesa_id']
         categoria = db.categorias_despesas_geral.find_one({'_id': ObjectId(categoria_id)})
         resultado.append({
-            'categoria': categoria['nome'],
-            'valor': gasto['valor'].replace(',', ''),
-            'data': gasto['data']
+        'categoria': categoria['nome'],
+        'valor': gasto['valor'].replace(',', ''),
+        'data': gasto['data'],            
+        'descricao': gasto.get('descricao', '')
         })
     
     if (dias==""):
