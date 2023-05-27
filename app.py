@@ -35,7 +35,7 @@ def login():
     return funcoes.login(user_crypt,password_crypt)
 #endregion
 
-#region Categorias
+#region Categorias Despesas
 @app.route('/categorias_despesas_geral', methods=['GET'])
 def categorias_despesas_geral():  
     return funcoes.categorias_despesas_geral()
@@ -56,6 +56,29 @@ def cadastro_categorias_usuario():
 def busca_categorias_despesas_geral_usuario():   
     user_id = request.json['id_usuario'].lower()
     return funcoes.busca_categorias_despesas_geral_usuario(user_id)
+#endregion
+
+#region Categorias Rendimentos
+@app.route('/categorias_rendimentos_geral', methods=['GET'])
+def categorias_rendimentos_geral():  
+    return funcoes.categorias_rendimentos_geral()
+    
+@app.route('/cadastro_categorias_rendimentos', methods=['POST'])
+def cadastro_categorias_rendimentos():
+    usuario_id = request.json['id_usuario'].lower()
+    nome_categoria = request.json['categoria'].lower()
+    return funcoes.cadastro_categorias_rendimentos(nome_categoria, usuario_id)
+
+@app.route('/cadastro_categorias_rendimentos_usuario', methods=['POST'])
+def cadastro_categorias_rendimentos_usuario():
+    usuario_id = request.json['id_usuario'].lower()
+    categorias = request.json['categorias']
+    return funcoes.cadastro_categorias_rendimentos_usuario(usuario_id,categorias)
+    
+@app.route('/busca_categorias_rendimentos_geral_usuario', methods=['POST'])
+def busca_categorias_rendimentos_geral_usuario():   
+    user_id = request.json['id_usuario'].lower()
+    return funcoes.busca_categorias_rendimentos_geral_usuario(user_id)
 #endregion
 
 #region Relatórios

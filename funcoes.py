@@ -55,6 +55,20 @@ def categorias_despesas_geral():
     except Exception as ex:
         return {'Message': 'Um erro ocorreu!', 'Descrição': str(ex)}
 
+def categorias_rendimentos_geral():
+    try:
+        categorias = db.categorias_rendimentos_geral.find()
+        
+        resposta = []
+        
+        for categoria in categorias:
+            dicionario = {"id": str(categoria['_id']),"categoria": categoria['nome']}
+            resposta.append(dicionario)
+
+        return jsonify(resposta)
+    except Exception as ex:
+        return {'Message': 'Um erro ocorreu!', 'Descrição': str(ex)}
+
 def cadastro_categorias(nome_categoria, usuario_id):
     data_hora_formatada = dataNow()
     
@@ -65,6 +79,18 @@ def cadastro_categorias(nome_categoria, usuario_id):
     categoria_id = db.categorias_despesas_geral.insert_one(categoria).inserted_id
     
     categoria_criada = db.categorias_despesas_geral.find_one({'_id': categoria_id}, {'_id': 1, 'nome': 1})
+    return {'id': str(categoria_criada['_id']), 'categoria': categoria_criada['nome']}
+
+def cadastro_categorias_rendimentos(nome_categoria, usuario_id):
+    data_hora_formatada = dataNow()
+    
+    if db.categorias_rendimentos_geral.count_documents({'nome': nome_categoria}) > 0:
+        return {'message': 'Categoria já está cadastrada!'}
+
+    categoria = {'nome': nome_categoria, 'users_id': usuario_id, 'data': data_hora_formatada}
+    categoria_id = db.categorias_rendimentos_geral.insert_one(categoria).inserted_id
+    
+    categoria_criada = db.categorias_rendimentos_geral.find_one({'_id': categoria_id}, {'_id': 1, 'nome': 1})
     return {'id': str(categoria_criada['_id']), 'categoria': categoria_criada['nome']}
 
 def cadastro_categorias_usuario(id_usuario, categorias):
@@ -85,11 +111,44 @@ def cadastro_categorias_usuario(id_usuario, categorias):
         
     except Exception as ex:
         return {'message': 'Um erro ocorreu!', 'descrição': str(ex)}
-   
+    
+def cadastro_categorias_rendimentos_usuario(id_usuario, categorias):
+    try:
+        cadastrar_categorias = db.cadastro_categorias_rendimentos_usuario
+        
+        for categoria in categorias:
+            categoria_id = categoria
+            
+            if cadastrar_categorias.count_documents({'users_id': id_usuario, 'categorias_id': categoria_id['id']}) == 0:
+                nova_categoria = {
+                    "users_id": id_usuario,
+                    "categorias_id": categoria_id['id']
+                }
+                cadastrar_categorias.insert_one(nova_categoria)
 
+        return {'message': 'Categorias inseridas com sucesso!'}
+        
+    except Exception as ex:
+        return {'message': 'Um erro ocorreu!', 'descrição': str(ex)}
+   
 def busca_categorias_despesas_geral_usuario(user_id):
     categorias_usuario = db['cadastrar_categorias_usuario']
     categorias_geral = db['categorias_despesas_geral']
+
+    categorias_user = categorias_usuario.find({'users_id': user_id})
+    categorias = []
+    for categoria in categorias_user:
+        categoria_geral = categorias_geral.find_one({'_id': ObjectId(categoria['categorias_id'])})
+        categorias.append({
+            'id': str(categoria_geral['_id']),
+            'categoria': categoria_geral['nome']
+        })
+
+    return jsonify(categorias)
+
+def busca_categorias_rendimentos_geral_usuario(user_id):
+    categorias_usuario = db['cadastro_categorias_rendimentos_usuario']
+    categorias_geral = db['categorias_rendimentos_geral']
 
     categorias_user = categorias_usuario.find({'users_id': user_id})
     categorias = []
